@@ -5,15 +5,25 @@ import java.awt.Event;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-public class M
+public class Minecraft
 extends Applet implements Runnable {
     private int[] inputData = new int[32767];
     int[] textureData = Textures.textureData;
     World world = new World();
+    Input input = new Input();
+    
     
     BufferedImage frameBuffer = new BufferedImage(214, 120, 1);
     int[] imageData = ((DataBufferInt)frameBuffer.getRaster().getDataBuffer()).getData();
 
+    public Minecraft()
+    {
+    	addKeyListener(input);
+		addFocusListener(input);
+		addMouseListener(input);
+		addMouseMotionListener(input);
+    }
+    
     @Override
     public void start() 
     {
@@ -231,6 +241,7 @@ extends Applet implements Runnable {
                 if (!this.isActive()) {
                     return;
                 }
+                System.out.println(input.getMouseX());
                 this.getGraphics().drawImage(frameBuffer, 0, 0, 856, 480, null);
             } 
         }
