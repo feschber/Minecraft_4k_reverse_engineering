@@ -7,7 +7,7 @@ import java.util.Random;
 public class M
 extends Applet
 implements Runnable {
-    private int[] M = new int[32767];
+    private int[] inputData = new int[32767];
 
     @Override
     public void start() {
@@ -19,15 +19,15 @@ implements Runnable {
         try {
             Random localRandom = new Random();
             BufferedImage localBufferedImage = new BufferedImage(214, 120, 1);
-            int[] arrayOfInt1 = ((DataBufferInt)localBufferedImage.getRaster().getDataBuffer()).getData();
-            int[] arrayOfInt2 = new int[262144];
+            int[] frameBuffer = ((DataBufferInt)localBufferedImage.getRaster().getDataBuffer()).getData();
+            int[] blockData = new int[262144];
             localRandom.setSeed(18295169);
             int i = 0;
             while (i < 262144) {
-                arrayOfInt2[i] = i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0;
+                blockData[i] = i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0;
                 ++i;
             }
-            int[] arrayOfInt3 = new int[12288];
+            int[] textureData = new int[12288];
             int j = 1;
             while (j < 16) {
                 int k = 255 - localRandom.nextInt(96);
@@ -86,7 +86,7 @@ implements Runnable {
                                 i2 = 255;
                             }
                         }
-                        arrayOfInt3[n + m * 16 + j * 256 * 3] = i3 = (i1 >> 16 & 255) * i2 / 255 << 16 | (i1 >> 8 & 255) * i2 / 255 << 8 | (i1 & 255) * i2 / 255;
+                        textureData[n + m * 16 + j * 256 * 3] = i3 = (i1 >> 16 & 255) * i2 / 255 << 16 | (i1 >> 8 & 255) * i2 / 255 << 8 | (i1 & 255) * i2 / 255;
                         ++n;
                     }
                     ++m;
@@ -113,9 +113,9 @@ implements Runnable {
                 block7 : while (System.currentTimeMillis() - l > 10) {
                     float f13;
                     float f14;
-                    if (this.M[2] > 0) {
-                        f13 = (float)(this.M[2] - 428) / 214.0f * 2.0f;
-                        f14 = (float)(this.M[3] - 240) / 120.0f * 2.0f;
+                    if (this.inputData[2] > 0) {
+                        f13 = (float)(this.inputData[2] - 428) / 214.0f * 2.0f;
+                        f14 = (float)(this.inputData[3] - 240) / 120.0f * 2.0f;
                         float f15 = (float)Math.sqrt(f13 * f13 + f14 * f14) - 1.2f;
                         if (f15 < 0.0f) {
                             f15 = 0.0f;
@@ -136,7 +136,7 @@ implements Runnable {
                     f4 *= 0.5f;
                     f5 *= 0.99f;
                     f6 *= 0.5f;
-                    f4 += f9 * (f14 += (float)(this.M[119] - this.M[115]) * 0.02f) + f10 * (f13 += (float)(this.M[100] - this.M[97]) * 0.02f);
+                    f4 += f9 * (f14 += (float)(this.inputData[119] - this.inputData[115]) * 0.02f) + f10 * (f13 += (float)(this.inputData[100] - this.inputData[97]) * 0.02f);
                     f6 += f10 * f14 - f9 * f13;
                     f5 += 0.003f;
                     int i8 = 0;
@@ -149,10 +149,10 @@ implements Runnable {
                             int i13 = (int)(f16 + (float)(i12 >> 0 & 1) * 0.6f - 0.3f) - 64;
                             int i14 = (int)(f17 + (float)((i12 >> 2) - 1) * 0.8f + 0.65f) - 64;
                             int i15 = (int)(f19 + (float)(i12 >> 1 & 1) * 0.6f - 0.3f) - 64;
-                            if (i13 < 0 || i14 < 0 || i15 < 0 || i13 >= 64 || i14 >= 64 || i15 >= 64 || arrayOfInt2[i13 + i14 * 64 + i15 * 4096] > 0) {
+                            if (i13 < 0 || i14 < 0 || i15 < 0 || i13 >= 64 || i14 >= 64 || i15 >= 64 || blockData[i13 + i14 * 64 + i15 * 4096] > 0) {
                                 if (i8 != 1) continue block7;
-                                if (this.M[32] > 0 && f5 > 0.0f) {
-                                    this.M[32] = 0;
+                                if (this.inputData[32] > 0 && f5 > 0.0f) {
+                                    this.inputData[32] = 0;
                                     f5 = -0.1f;
                                     continue block7;
                                 }
@@ -169,13 +169,13 @@ implements Runnable {
                 }
                 int i6 = 0;
                 int i7 = 0;
-                if (this.M[1] > 0 && i4 > 0) {
-                    arrayOfInt2[i4] = 0;
-                    this.M[1] = 0;
+                if (this.inputData[1] > 0 && i4 > 0) {
+                    blockData[i4] = 0;
+                    this.inputData[1] = 0;
                 }
-                if (this.M[0] > 0 && i4 > 0) {
-                    arrayOfInt2[i4 + i5] = 1;
-                    this.M[0] = 0;
+                if (this.inputData[0] > 0 && i4 > 0) {
+                    blockData[i4 + i5] = 1;
+                    this.inputData[0] = 0;
                 }
                 int i8 = 0;
                 while (i8 < 12) {
@@ -183,7 +183,7 @@ implements Runnable {
                     int i10 = (int)(f2 + (float)((i8 >> 2) - 1) * 0.8f + 0.65f) - 64;
                     i11 = (int)(f3 + (float)(i8 >> 1 & 1) * 0.6f - 0.3f) - 64;
                     if (i9 >= 0 && i10 >= 0 && i11 >= 0 && i9 < 64 && i10 < 64 && i11 < 64) {
-                        arrayOfInt2[i9 + i10 * 64 + i11 * 4096] = 0;
+                        blockData[i9 + i10 * 64 + i11 * 4096] = 0;
                     }
                     ++i8;
                 }
@@ -247,7 +247,7 @@ implements Runnable {
                                 int i23 = (int)f36 - 64;
                                 if (i21 < 0 || i22 < 0 || i23 < 0 || i21 >= 64 || i22 >= 64 || i23 >= 64) break;
                                 int i24 = i21 + i22 * 64 + i23 * 4096;
-                                int i25 = arrayOfInt2[i24];
+                                int i25 = blockData[i24];
                                 if (i25 > 0) {
                                     i6 = (int)((f34 + f36) * 16.0f) & 15;
                                     i7 = ((int)(f35 * 16.0f) & 15) + 16;
@@ -260,9 +260,9 @@ implements Runnable {
                                     }
                                     int i26 = 16777215;
                                     if (i24 != i4 || i6 > 0 && i7 % 16 > 0 && i6 < 15 && i7 % 16 < 15) {
-                                        i26 = arrayOfInt3[i6 + i7 * 16 + i25 * 256 * 3];
+                                        i26 = textureData[i6 + i7 * 16 + i25 * 256 * 3];
                                     }
-                                    if (f33 < f26 && i9 == this.M[2] / 4 && i11 == this.M[3] / 4) {
+                                    if (f33 < f26 && i9 == this.inputData[2] / 4 && i11 == this.inputData[3] / 4) {
                                         i82 = i24;
                                         i5 = 1;
                                         if (f27 > 0.0f) {
@@ -288,7 +288,7 @@ implements Runnable {
                         i18 = (i16 >> 16 & 255) * i17 / 255;
                         int i19 = (i16 >> 8 & 255) * i17 / 255;
                         int i20 = (i16 & 255) * i17 / 255;
-                        arrayOfInt1[i9 + i11 * 214] = i18 << 16 | i19 << 8 | i20;
+                        frameBuffer[i9 + i11 * 214] = i18 << 16 | i19 << 8 | i20;
                         ++i11;
                     }
                     ++i9;
@@ -314,30 +314,30 @@ implements Runnable {
                 i = 1;
             }
             case 402: {
-                this.M[paramEvent.key] = i;
+                this.inputData[paramEvent.key] = i;
                 break;
             }
             case 501: {
                 i = 1;
-                this.M[2] = paramEvent.x;
-                this.M[3] = paramEvent.y;
+                this.inputData[2] = paramEvent.x;
+                this.inputData[3] = paramEvent.y;
             }
             case 502: {
                 if ((paramEvent.modifiers & 4) > 0) {
-                    this.M[1] = i;
+                    this.inputData[1] = i;
                     break;
                 }
-                this.M[0] = i;
+                this.inputData[0] = i;
                 break;
             }
             case 503: 
             case 506: {
-                this.M[2] = paramEvent.x;
-                this.M[3] = paramEvent.y;
+                this.inputData[2] = paramEvent.x;
+                this.inputData[3] = paramEvent.y;
                 break;
             }
             case 505: {
-                this.M[2] = 0;
+                this.inputData[2] = 0;
             }
         }
         return true;
