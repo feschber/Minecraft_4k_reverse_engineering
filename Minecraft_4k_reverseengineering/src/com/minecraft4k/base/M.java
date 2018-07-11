@@ -4,14 +4,12 @@ import java.applet.Applet;
 import java.awt.Event;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.util.Random;
 
 public class M
 extends Applet implements Runnable {
-	Random random = new Random();
     private int[] inputData = new int[32767];
     int[] textureData = Textures.textureData;
-    int[] blockData = new int[262144];
+    World world = new World();
     
     BufferedImage frameBuffer = new BufferedImage(214, 120, 1);
     int[] imageData = ((DataBufferInt)frameBuffer.getRaster().getDataBuffer()).getData();
@@ -26,9 +24,7 @@ extends Applet implements Runnable {
     public void run() 
     {
         try 
-        {           
-            initWorld();          
-
+        {                             
             float f1 = 96.5f;
             float f2 = 65.0f;
             float f3 = 96.5f;
@@ -86,7 +82,7 @@ extends Applet implements Runnable {
                             int i13 = (int)(f16 + (float)(i12 >> 0 & 1) * 0.6f - 0.3f) - 64;
                             int i14 = (int)(f17 + (float)((i12 >> 2) - 1) * 0.8f + 0.65f) - 64;
                             int i15 = (int)(f19 + (float)(i12 >> 1 & 1) * 0.6f - 0.3f) - 64;
-                            if (i13 < 0 || i14 < 0 || i15 < 0 || i13 >= 64 || i14 >= 64 || i15 >= 64 || blockData[i13 + i14 * 64 + i15 * 4096] > 0) {
+                            if (i13 < 0 || i14 < 0 || i15 < 0 || i13 >= 64 || i14 >= 64 || i15 >= 64 || world.blockData[i13 + i14 * 64 + i15 * 4096] > 0) {
                                 if (i8 != 1) continue block7;
                                 if (this.inputData[32] > 0 && f5 > 0.0f) {
                                     this.inputData[32] = 0;
@@ -107,11 +103,11 @@ extends Applet implements Runnable {
                 int i6 = 0;
                 int i7 = 0;
                 if (this.inputData[1] > 0 && i4 > 0) {
-                    blockData[i4] = 0;
+                    world.blockData[i4] = 0;
                     this.inputData[1] = 0;
                 }
                 if (this.inputData[0] > 0 && i4 > 0) {
-                    blockData[i4 + i5] = 1;
+                    world.blockData[i4 + i5] = 1;
                     this.inputData[0] = 0;
                 }
                 int i8 = 0;
@@ -120,7 +116,7 @@ extends Applet implements Runnable {
                     int i10 = (int)(f2 + (float)((i8 >> 2) - 1) * 0.8f + 0.65f) - 64;
                     i11 = (int)(f3 + (float)(i8 >> 1 & 1) * 0.6f - 0.3f) - 64;
                     if (i9 >= 0 && i10 >= 0 && i11 >= 0 && i9 < 64 && i10 < 64 && i11 < 64) {
-                        blockData[i9 + i10 * 64 + i11 * 4096] = 0;
+                        world.blockData[i9 + i10 * 64 + i11 * 4096] = 0;
                     }
                     ++i8;
                 }
@@ -184,7 +180,7 @@ extends Applet implements Runnable {
                                 int i23 = (int)f36 - 64;
                                 if (i21 < 0 || i22 < 0 || i23 < 0 || i21 >= 64 || i22 >= 64 || i23 >= 64) break;
                                 int i24 = i21 + i22 * 64 + i23 * 4096;
-                                int i25 = blockData[i24];
+                                int i25 = world.blockData[i24];
                                 if (i25 > 0) {
                                     i6 = (int)((f34 + f36) * 16.0f) & 15;
                                     i7 = ((int)(f35 * 16.0f) & 15) + 16;
@@ -242,15 +238,6 @@ extends Applet implements Runnable {
             return;
         }
     }
-    
-    public void initWorld()
-    {
-    	random.setSeed(18295169);
-        for(int i = 0; i < 262144; i++)         
-            blockData[i] = i / 64 % 64 > 32 + random.nextInt(8) ? random.nextInt(8) + 1 : 0;
-    }
-    
-    
 
     @Override
     public boolean handleEvent(Event paramEvent) {
