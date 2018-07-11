@@ -7,92 +7,28 @@ import java.util.Random;
 public class M
 extends Applet
 implements Runnable {
+	Random random = new Random();
     private int[] inputData = new int[32767];
+    int[] textureData = new int[12288];
+    int[] blockData = new int[262144];
+    
+    BufferedImage frameBuffer = new BufferedImage(214, 120, 1);
+    int[] imageData = ((DataBufferInt)frameBuffer.getRaster().getDataBuffer()).getData();
 
     @Override
-    public void start() {
+    public void start() 
+    {
         new Thread(this).start();
     }
 
     @Override
-    public void run() {
-        try {
-            Random localRandom = new Random();
-            BufferedImage localBufferedImage = new BufferedImage(214, 120, 1);
-            int[] frameBuffer = ((DataBufferInt)localBufferedImage.getRaster().getDataBuffer()).getData();
-            int[] blockData = new int[262144];
-            localRandom.setSeed(18295169);
-            int i = 0;
-            while (i < 262144) {
-                blockData[i] = i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0;
-                ++i;
-            }
-            int[] textureData = new int[12288];
-            int j = 1;
-            while (j < 16) {
-                int k = 255 - localRandom.nextInt(96);
-                int m = 0;
-                while (m < 48) {
-                    int n = 0;
-                    while (n < 16) {
-                        int i3;
-                        int i2;
-                        int i1 = 9858122;
-                        if (j == 4) {
-                            i1 = 8355711;
-                        }
-                        if (j != 4 || localRandom.nextInt(3) == 0) {
-                            k = 255 - localRandom.nextInt(96);
-                        }
-                        if (j == 1 && m < (n * n * 3 + n * 81 >> 2 & 3) + 18) {
-                            i1 = 6990400;
-                        } else if (j == 1 && m < (n * n * 3 + n * 81 >> 2 & 3) + 19) {
-                            k = k * 2 / 3;
-                        }
-                        if (j == 7) {
-                            i1 = 6771249;
-                            if (n > 0 && n < 15 && (m > 0 && m < 15 || m > 32 && m < 47)) {
-                                i1 = 12359778;
-                                i2 = n - 7;
-                                i3 = (m & 15) - 7;
-                                if (i2 < 0) {
-                                    i2 = 1 - i2;
-                                }
-                                if (i3 < 0) {
-                                    i3 = 1 - i3;
-                                }
-                                if (i3 > i2) {
-                                    i2 = i3;
-                                }
-                                k = 196 - localRandom.nextInt(32) + i2 % 3 * 32;
-                            } else if (localRandom.nextInt(2) == 0) {
-                                k = k * (150 - (n & 1) * 100) / 100;
-                            }
-                        }
-                        if (j == 5) {
-                            i1 = 11876885;
-                            if ((n + m / 4 * 4) % 8 == 0 || m % 4 == 0) {
-                                i1 = 12365733;
-                            }
-                        }
-                        i2 = k;
-                        if (m >= 32) {
-                            i2 /= 2;
-                        }
-                        if (j == 8) {
-                            i1 = 5298487;
-                            if (localRandom.nextInt(2) == 0) {
-                                i1 = 0;
-                                i2 = 255;
-                            }
-                        }
-                        textureData[n + m * 16 + j * 256 * 3] = i3 = (i1 >> 16 & 255) * i2 / 255 << 16 | (i1 >> 8 & 255) * i2 / 255 << 8 | (i1 & 255) * i2 / 255;
-                        ++n;
-                    }
-                    ++m;
-                }
-                ++j;
-            }
+    public void run() 
+    {
+        try 
+        {           
+            initWorld();
+            initTextures();
+
             float f1 = 96.5f;
             float f2 = 65.0f;
             float f3 = 96.5f;
@@ -288,7 +224,7 @@ implements Runnable {
                         i18 = (i16 >> 16 & 255) * i17 / 255;
                         int i19 = (i16 >> 8 & 255) * i17 / 255;
                         int i20 = (i16 & 255) * i17 / 255;
-                        frameBuffer[i9 + i11 * 214] = i18 << 16 | i19 << 8 | i20;
+                        imageData[i9 + i11 * 214] = i18 << 16 | i19 << 8 | i20;
                         ++i11;
                     }
                     ++i9;
@@ -298,11 +234,81 @@ implements Runnable {
                 if (!this.isActive()) {
                     return;
                 }
-                this.getGraphics().drawImage(localBufferedImage, 0, 0, 856, 480, null);
+                this.getGraphics().drawImage(frameBuffer, 0, 0, 856, 480, null);
             } while (true);
         }
         catch (Exception localException) {
             return;
+        }
+    }
+    
+    public void initWorld()
+    {
+    	random.setSeed(18295169);
+        for(int i = 0; i < 262144; i++)         
+            blockData[i] = i / 64 % 64 > 32 + random.nextInt(8) ? random.nextInt(8) + 1 : 0;
+    }
+    
+    public void initTextures()
+    {
+        for(int j = 0; j < 16; j++) {
+            int k = 255 - random.nextInt(96);
+            for(int m = 0; m < 48; m++) {
+               for(int n = 0; n < 16; n++) {
+                    int i3;
+                    int i2;
+                    int i1 = 9858122;
+                    if (j == 4) {
+                        i1 = 8355711;
+                    }
+                    if (j != 4 || random.nextInt(3) == 0) {
+                        k = 255 - random.nextInt(96);
+                    }
+                    if (j == 1 && m < (n * n * 3 + n * 81 >> 2 & 3) + 18) {
+                        i1 = 6990400;
+                    } else if (j == 1 && m < (n * n * 3 + n * 81 >> 2 & 3) + 19) {
+                        k = k * 2 / 3;
+                    }
+                    if (j == 7) {
+                        i1 = 6771249;
+                        if (n > 0 && n < 15 && (m > 0 && m < 15 || m > 32 && m < 47)) {
+                            i1 = 12359778;
+                            i2 = n - 7;
+                            i3 = (m & 15) - 7;
+                            if (i2 < 0) {
+                                i2 = 1 - i2;
+                            }
+                            if (i3 < 0) {
+                                i3 = 1 - i3;
+                            }
+                            if (i3 > i2) {
+                                i2 = i3;
+                            }
+                            k = 196 - random.nextInt(32) + i2 % 3 * 32;
+                        } else if (random.nextInt(2) == 0) {
+                            k = k * (150 - (n & 1) * 100) / 100;
+                        }
+                    }
+                    if (j == 5) {
+                        i1 = 11876885;
+                        if ((n + m / 4 * 4) % 8 == 0 || m % 4 == 0) {
+                            i1 = 12365733;
+                        }
+                    }
+                    i2 = k;
+                    if (m >= 32) {
+                        i2 /= 2;
+                    }
+                    if (j == 8) {
+                        i1 = 5298487;
+                        if (random.nextInt(2) == 0) {
+                            i1 = 0;
+                            i2 = 255;
+                        }
+                    }
+                    textureData[n + m * 16 + j * 256 * 3] = i3 = (i1 >> 16 & 255) * i2 / 255 << 16 | (i1 >> 8 & 255) * i2 / 255 << 8 | (i1 & 255) * i2 / 255;
+                }
+            }
         }
     }
 
