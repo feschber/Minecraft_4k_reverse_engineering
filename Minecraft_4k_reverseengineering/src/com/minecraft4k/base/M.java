@@ -25,7 +25,7 @@ extends Applet implements Runnable {
     {
         try 
         {                             
-            float f1 = 96.5f;
+            float f1 = 64 + 32.5f;
             float f2 = 65.0f;
             float f3 = 96.5f;
             float f4 = 0.0f;
