@@ -1,13 +1,12 @@
 package com.minecraft4k.base;
 
 import java.applet.Applet;
-import java.awt.Event;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 public class Minecraft
 extends Applet implements Runnable {
-    private int[] inputData = new int[32767];
+
     int[] textureData = Textures.textureData;
     World world = new World();
     Input input = new Input();
@@ -56,9 +55,9 @@ extends Applet implements Runnable {
                 block7 : while (System.currentTimeMillis() - l > 10) {
                     float f13;
                     float f14;
-                    if (this.inputData[2] > 0) {
-                        f13 = (float)(this.inputData[2] - 428) / 214.0f * 2.0f;
-                        f14 = (float)(this.inputData[3] - 240) / 120.0f * 2.0f;
+                    if (this.input.getMouseX() > 0) {
+                        f13 = (float)(this.input.getMouseX() - 428) / 214.0f * 2.0f;
+                        f14 = (float)(this.input.getMouseY() - 240) / 120.0f * 2.0f;
                         float f15 = (float)Math.sqrt(f13 * f13 + f14 * f14) - 1.2f;
                         if (f15 < 0.0f) {
                             f15 = 0.0f;
@@ -79,7 +78,7 @@ extends Applet implements Runnable {
                     f4 *= 0.5f;
                     f5 *= 0.99f;
                     f6 *= 0.5f;
-                    f4 += f9 * (f14 += (float)(this.inputData[119] - this.inputData[115]) * 0.02f) + f10 * (f13 += (float)(this.inputData[100] - this.inputData[97]) * 0.02f);
+                    f4 += f9 * (f14 += (float)(this.input.getKey(119)?1:0 - (this.input.getKey(115)?1:0) * 0.02f) + f10 * (f13 += (float)(this.input.getKey(100)?1:0) - (this.input.getKey(97)?1:0) * 0.02f));
                     f6 += f10 * f14 - f9 * f13;
                     f5 += 0.003f;
                     int i8 = 0;
@@ -94,8 +93,8 @@ extends Applet implements Runnable {
                             int i15 = (int)(f19 + (float)(i12 >> 1 & 1) * 0.6f - 0.3f) - 64;
                             if (i13 < 0 || i14 < 0 || i15 < 0 || i13 >= 64 || i14 >= 64 || i15 >= 64 || world.blockData[i13 + i14 * 64 + i15 * 4096] > 0) {
                                 if (i8 != 1) continue block7;
-                                if (this.inputData[32] > 0 && f5 > 0.0f) {
-                                    this.inputData[32] = 0;
+                                if (this.input.getKey(32) && f5 > 0.0f) {
+                                    //this.input.getKey(32) = 0;
                                     f5 = -0.1f;
                                     continue block7;
                                 }
@@ -112,13 +111,13 @@ extends Applet implements Runnable {
                 }
                 int i6 = 0;
                 int i7 = 0;
-                if (this.inputData[1] > 0 && i4 > 0) {
+                if (this.input.getKey(1) && i4 > 0) {
                     world.blockData[i4] = 0;
-                    this.inputData[1] = 0;
+                    //this.input.getKey(1) = false;
                 }
-                if (this.inputData[0] > 0 && i4 > 0) {
+                if (this.input.getKey(0) && i4 > 0) {
                     world.blockData[i4 + i5] = 1;
-                    this.inputData[0] = 0;
+                    //this.input.getKey(0) = false;
                 }
                 int i8 = 0;
                 while (i8 < 12) {
@@ -205,7 +204,7 @@ extends Applet implements Runnable {
                                     if (i24 != i4 || i6 > 0 && i7 % 16 > 0 && i6 < 15 && i7 % 16 < 15) {
                                         i26 = textureData[i6 + i7 * 16 + i25 * 256 * 3];
                                     }
-                                    if (f33 < f26 && i9 == this.inputData[2] / 4 && i11 == this.inputData[3] / 4) {
+                                    if (f33 < f26 && i9 == this.input.getMouseX() / 4 && i11 == this.input.getMouseY() / 4) {
                                         i82 = i24;
                                         i5 = 1;
                                         if (f27 > 0.0f) {
@@ -241,49 +240,11 @@ extends Applet implements Runnable {
                 if (!this.isActive()) {
                     return;
                 }
-                System.out.println(input.getMouseX());
                 this.getGraphics().drawImage(frameBuffer, 0, 0, 856, 480, null);
             } 
         }
         catch (Exception localException) {
             return;
         }
-    }
-
-    @Override
-    public boolean handleEvent(Event paramEvent) {
-        int i = 0;
-        switch (paramEvent.id) {
-            case 401: {
-                i = 1;
-            }
-            case 402: {
-                this.inputData[paramEvent.key] = i;
-                break;
-            }
-            case 501: {
-                i = 1;
-                this.inputData[2] = paramEvent.x;
-                this.inputData[3] = paramEvent.y;
-            }
-            case 502: {
-                if ((paramEvent.modifiers & 4) > 0) {
-                    this.inputData[1] = i;
-                    break;
-                }
-                this.inputData[0] = i;
-                break;
-            }
-            case 503: 
-            case 506: {
-                this.inputData[2] = paramEvent.x;
-                this.inputData[3] = paramEvent.y;
-                break;
-            }
-            case 505: {
-                this.inputData[2] = 0;
-            }
-        }
-        return true;
     }
 }
