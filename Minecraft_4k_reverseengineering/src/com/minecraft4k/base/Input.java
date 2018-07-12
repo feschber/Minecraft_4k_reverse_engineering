@@ -52,8 +52,6 @@ public class Input implements KeyListener, FocusListener,
 			mouseButtons[code] = false;
 	}
 
-
-
 	public void focusGained(FocusEvent e) 
 	{}
 
@@ -83,23 +81,11 @@ public class Input implements KeyListener, FocusListener,
 	public void keyTyped(KeyEvent e) 
 	{}
 
-	public boolean GetKey(int key) 
-	{
-		return keys[key];
-	}
+	public boolean getKey(int key) {return keys[key];}
 
-	public boolean GetMouse(int button) 
-	{
-		return mouseButtons[button];
-	}
+	public boolean getMouse(int button) {return mouseButtons[button];}
 
-	public int GetMouseX() 
-	{
-		return mouseX;
-	}
+	public int getMouseX() {return mouseX;}
 
-	public int GetMouseY() 
-	{
-		return mouseY;
-	}
+	public int getMouseY() {return mouseY;}
 }
